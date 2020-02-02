@@ -1,9 +1,21 @@
-void setup() {
-  // put your setup code here, to run once:
 
+#include "display.h"
+
+//#include <TFT_HX8357.h> // Hardware-specific library
+
+//TFT_HX8357 tft = TFT_HX8357();       // Invoke custom library
+
+
+void setup() {
+  randomSeed(analogRead(0));
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  static lcd_display the_display;
+  static bool state = false;
+
+  state = !state;
+  the_display.update_display(random(0, 15), state);
+  delay(10);
 
 }
