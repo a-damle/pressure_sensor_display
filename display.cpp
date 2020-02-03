@@ -7,14 +7,12 @@ lcd_display::lcd_display()
   tft.init();
   tft.setRotation(1);
   reset();
-  Serial.begin(9600);
 }
     
 void lcd_display::update_display(int line, bool state)
 {
   if(line > 15 || line < 0)
   {
-    Serial.print("returning/n");
     return;  
   }
 
