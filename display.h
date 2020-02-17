@@ -13,7 +13,7 @@ class lcd_display
   public:
     lcd_display();
     
-    void update_display(int fiber_index, int state);
+    void update_display(int fiber_index, double state);
     void reset();
   
   private:

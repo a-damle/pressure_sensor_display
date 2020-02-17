@@ -7,24 +7,24 @@ lcd_display::lcd_display()
   tft.init();
   tft.setRotation(1);
   reset();
-  Serial.begin(9600);
+  //Serial.begin(9600);
 }
     
-void lcd_display::update_display(int fiber_index, int state)
+void lcd_display::update_display(int fiber_index, double state)
 {
   if(fiber_index > 15 || fiber_index < 0)
   {
     return;  
   }
 
-  fibers[fiber_index] = (double)state/(double)FIBER_MAX_VAL;
-
-  Serial.print(fiber_index);
+  //fibers[fiber_index] = (double)state/(double)FIBER_MAX_VAL;
+  fibers[fiber_index] = state;
+/*  Serial.print(fiber_index);
   Serial.print(" Raw val: ");
   Serial.print(state);
   Serial.print(" percent value: ");
   Serial.print(fibers[fiber_index]);
-  Serial.print("\n");
+  Serial.print("\n");*/
 
   update_rectangles();
 }
@@ -98,7 +98,8 @@ void lcd_display::update_rectangles()
     {
         if(fibers[i] !=0.0 && fibers[j+8] != 0.0)
         {
-          percent = 2L*(fibers[i]*fibers[j+8])/(fibers[i]+fibers[j+8]);
+          //percent = (double)2L*(fibers[i]*fibers[j+8])/(fibers[i]+fibers[j+8]);
+          percent = (fibers[i]*fibers[j+8]);    
         }
         else
         {

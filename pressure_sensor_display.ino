@@ -1,6 +1,6 @@
 
 #include "display.h"
-
+#include "pressure_sensor.h"
 void setup() {
   randomSeed(analogRead(0));
     Serial.begin(9600);
@@ -9,16 +9,42 @@ void setup() {
 
 void loop() {
   static lcd_display the_display;
-  static bool state = false;
-  int num1 = random(0,7);
-  int num2 = random(8,15);
+  static pressure_sensor sensors;
+  
   int analog_reading = 0;
 
-/*  the_display.update_display(1, 1023); 
-  the_display.update_display(9, 1023);
-  the_display.update_display(1, 300); 
-  the_display.update_display(9, 300);  */
 
+  for(int i = 0; i < 5; i++)
+  {
+    sensors.measure_resistance(i);
+    //Serial.print(i);
+    //Serial.print(" delta r : ");
+    //Serial.print(sensors.get_delta_r(i));
+    //Serial.print("\n");
+    the_display.update_display(i, sensors.get_delta_r(i));
+  }
+
+  for(int i = 8; i < 13; i++)
+  {
+    sensors.measure_resistance(i);
+    //Serial.print(i);
+    //Serial.print(" delta r : ");
+    //Serial.print(sensors.get_delta_r(i));
+    //Serial.print("\n");  
+    the_display.update_display(i, sensors.get_delta_r(i));
+  }
+
+  //sensors.re_callibrate();
+  /*for(int i = 0; i < 16; i++)
+  {
+    Serial.print(i);
+    Serial.print(" : ");
+    Serial.print(sensors[i].get_delta_r(i));
+    Serial.print("\t");  
+  }
+
+  Serial.print("\n");*/
+/*
   for(int i = 0; i < 4; i++)
   {
     analog_reading = analogRead(i);
@@ -30,5 +56,5 @@ void loop() {
     analog_reading = analogRead(i);
     the_display.update_display(i, analog_reading); 
   }
-
+*/
 }
