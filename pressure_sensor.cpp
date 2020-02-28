@@ -9,11 +9,14 @@ pressure_sensor::pressure_sensor()
     
 void pressure_sensor::re_callibrate()
 {
-  delay(1000);
+  Serial.print("start calibrate\n");
+  delay(10000);
   double V_o = 0;
   for(int i = 0; i < 16; i++)
   {
     V_o = 0;
+    dVdt[i] = 0;
+    press_state[i]=0;
     for(int j = 0; j < 100; j++)
     {
       delay(1);
@@ -40,10 +43,18 @@ void pressure_sensor::re_callibrate()
       
   } 
   Serial.print("End calib\n");*/
+  Serial.print("end calibration\n");
+
 }
 
 void pressure_sensor::measure_resistance(int fiber_index)
 {
+    
+    if(fiber_index < 0 || fiber_index > 15)
+    {
+      return;  
+    }
+    
     double V_o = 0;
 
     for(int i = 0; i < 10; i++)
@@ -51,7 +62,7 @@ void pressure_sensor::measure_resistance(int fiber_index)
       V_o += analogRead(fiber_index);
     }
     V_o = V_o/(double)10.0;
-
+    dVdt[fiber_index] = V_o - dVdt[fiber_index];    
     
     double r = (double)R_LOAD*(  ( (double)V_I/V_o    )   - (double)1.0     );
     delta_r[fiber_index] = (r0[fiber_index]-r)/(double)DELTA_R_MAX;
@@ -63,6 +74,7 @@ void pressure_sensor::measure_resistance(int fiber_index)
     {
       delta_r[fiber_index] = 0;
     }
+    release_detect();
     /*
     Serial.print(fiber_index);
     Serial.print(" R0: ");
@@ -92,4 +104,84 @@ void pressure_sensor::reset()
     r0[i] = 0;
   }  
   re_callibrate();
+}
+
+void pressure_sensor::release_detect()
+{
+  for(int i = 0; i < 16; i++)
+  {
+    int dVdt_value = 0;
+    
+    if(dVdt[i]> dVdt_THRESHOLD)
+    {
+      dVdt_value = 1;
+    }
+    else if(dVdt[i] < -dVdt_THRESHOLD)\
+    {
+      dVdt_value = -1;
+    }
+    else
+    {
+      dVdt_value = 0;
+    }
+
+    if(press_state[i] == 2 && (dVdt[i] >= -ZERO_THRESH_MULT*dVdt_THRESHOLD) &&   (dVdt[i] <= ZERO_THRESH_MULT*dVdt_THRESHOLD) )
+    {  
+      dVdt_value = 0;
+    }
+    
+    switch(press_state[i])
+    {
+      case 0:
+      {
+        if(dVdt_value == -1)
+        {
+          press_state[i] = 1;
+        }
+        break;
+      }
+      case 1:
+      {
+        if(dVdt_value ==  1)
+        {
+          press_state[i] = 2;
+        }
+        break;
+      }
+      case 2:
+      {
+        if(dVdt_value == 0)
+        {
+          press_state[i] = 3;
+        }
+        break;
+      }
+      case 3:
+      {
+        press_state[i] = 0;  
+        break;
+      }                
+      default:
+      {
+        press_state[i] = 0; 
+        break;
+      }     
+    }
+    if(press_state[i] == 3)
+    {
+      Serial.print("release detected on fiber: ");
+      Serial.print(i);
+      Serial.print("\n");
+      re_callibrate(); 
+      return;
+    }
+  }
+  /*for(int i = 0; i < 16; i++)
+  {
+      Serial.print("|");
+      Serial.print(i);
+      Serial.print(":");
+      Serial.print(press_state[i]);     
+   }
+   Serial.print("\n");*/
 }

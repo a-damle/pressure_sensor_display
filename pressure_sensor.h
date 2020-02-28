@@ -1,10 +1,11 @@
 #ifndef PRESSURE_SENSOR_H
 #define PRESSURE_SENSOR_H
 
-#define DELTA_R_MAX 50000
+#define DELTA_R_MAX 300000
 #define R_LOAD      1000000
 #define V_I         1023
-
+#define dVdt_THRESHOLD  20
+#define ZERO_THRESH_MULT 5
 
 #include "Arduino.h"
 
@@ -24,7 +25,11 @@ class pressure_sensor
   private:
   
     double  delta_r[16];
+    double  dVdt[16];
     double  r0[16];
+    int     press_state[16];
+    
+    void release_detect();
     
 };
 

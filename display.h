@@ -23,6 +23,7 @@ class lcd_display
     double fibers[16];
     unsigned int rectangles[8][8];
     unsigned int get_rgb_color(double percent);
+    unsigned int get_rgb_color_v2(double percent);
     void update_rectangles();
     
 };
