@@ -74,7 +74,6 @@ void pressure_sensor::measure_resistance(int fiber_index)
     {
       delta_r[fiber_index] = 0;
     }
-    release_detect();
     /*
     Serial.print(fiber_index);
     Serial.print(" R0: ");
@@ -106,7 +105,7 @@ void pressure_sensor::reset()
   re_callibrate();
 }
 
-void pressure_sensor::release_detect()
+bool pressure_sensor::release_detect()
 {
   for(int i = 0; i < 16; i++)
   {
@@ -172,10 +171,10 @@ void pressure_sensor::release_detect()
       Serial.print("release detected on fiber: ");
       Serial.print(i);
       Serial.print("\n");
-      re_callibrate(); 
-      return;
+      return true;
     }
   }
+  return false;
   /*for(int i = 0; i < 16; i++)
   {
       Serial.print("|");

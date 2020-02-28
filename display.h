@@ -15,6 +15,8 @@ class lcd_display
     
     void update_display(int fiber_index, double state);
     void reset();
+    void reset_v3();
+    void print_calibrating();
   
   private:
     
@@ -24,6 +26,7 @@ class lcd_display
     unsigned int rectangles[8][8];
     unsigned int get_rgb_color(double percent);
     unsigned int get_rgb_color_v2(double percent);
+    unsigned int get_rgb_color_v3(double percent);
     void update_rectangles();
     
 };

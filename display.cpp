@@ -5,7 +5,8 @@ lcd_display::lcd_display()
 {
   tft = TFT_HX8357();
   tft.init();
-  tft.setRotation(1);
+  tft.setRotation(3);
+  tft.setTextFont((int)0);
   reset();
   //Serial.begin(9600);
 }
@@ -29,6 +30,14 @@ void lcd_display::update_display(int fiber_index, double state)
   update_rectangles();
 }
 
+void lcd_display::print_calibrating()
+{
+  tft.fillScreen(TFT_BLACK);
+  tft.drawCentreString((char*)"recalibrating", 240, 160, 4);
+
+
+  
+}
 void lcd_display::reset()
 {
   for(int i = 0; i<16; i++)
@@ -46,6 +55,26 @@ void lcd_display::reset()
   }
 
 }
+
+void lcd_display::reset_v3()
+{
+  for(int i = 0; i<16; i++)
+  {
+    fibers[i] = 0;  
+  }
+  for(int i = 0; i<8; i++)
+  {
+    for(int j = 0; j<8; j++)
+    {
+      rectangles[i][j] = 0;
+      tft.fillRect(60*i, 40*j, 60, 40, TFT_BLACK);
+  
+    }  
+  }
+
+}
+
+
 
 unsigned int lcd_display::get_rgb_color(double percent)
 {
@@ -138,6 +167,20 @@ unsigned int lcd_display::get_rgb_color_v2(double percent)
 }
 
 
+unsigned int lcd_display::get_rgb_color_v3(double percent)
+{
+  
+  if(percent > 1.0 || percent < 0.0)
+  {
+    percent = 1;  
+  }
+  int dec_resolution = 8*percent;
+  double new_percent = (double)dec_resolution/(double)8;
+  unsigned int return_rgb = 31*new_percent;
+
+  return return_rgb;
+}
+
 void lcd_display::update_rectangles()
 {
   unsigned int rgb_col = get_rgb_color(0.0);
@@ -148,8 +191,8 @@ void lcd_display::update_rectangles()
     {
         if(fibers[i] !=0.0 && fibers[j+8] != 0.0)
         {
-          percent = (double)2L*(fibers[i]*fibers[j+8])/(fibers[i]+fibers[j+8]);
-          //percent = (fibers[i]*fibers[j+8]);
+          //percent = (double)2L*(fibers[i]*fibers[j+8])/(fibers[i]+fibers[j+8]);
+          percent = (fibers[i]*fibers[j+8]);
               
         }
         else
@@ -157,6 +200,7 @@ void lcd_display::update_rectangles()
           percent = 0;
         }
       rgb_col = get_rgb_color_v2(   percent);
+      //rgb_col = get_rgb_color_v3(   percent);
 /*      Serial.print(i);
       Serial.print(" , ");
       Serial.print(j);
