@@ -4,10 +4,18 @@
 #define DELTA_R_MAX 200000
 #define R_LOAD      1000000
 #define V_I         1023
-#define dVdt_THRESHOLD  25
-#define ZERO_THRESH_MULT 3
+#define dVdt_THRESHOLD  12  /*12*/
+#define ZERO_THRESH_MULT 2  /*2*/
+#define REPEAT_STATES_CNT 3 /*3*/
+#define REPEAT_STATES_MULT 2 /*2*/
 
 #include "Arduino.h"
+
+typedef struct press_state_t
+{
+    int state;
+    unsigned int count;
+}press_state_t;
 
 
 class pressure_sensor
@@ -27,7 +35,8 @@ class pressure_sensor
     double  delta_r[16];
     double  dVdt[16];
     double  r0[16];
-    int     press_state[16];
+    press_state_t     press_state[16];
+    double  delta_r_max[16];
     
     
 };

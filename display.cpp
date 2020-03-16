@@ -128,8 +128,8 @@ unsigned int lcd_display::get_rgb_color_v2(double percent)
     percent = 1;  
   }
   
-  int dec_resolution = 8*percent;
-  double new_percent = (double)dec_resolution/(double)8;
+  int dec_resolution = 3*percent;
+  double new_percent = (double)dec_resolution/(double)3;
   
   unsigned int return_int = new_percent * 188;
   
@@ -181,6 +181,30 @@ unsigned int lcd_display::get_rgb_color_v3(double percent)
   return return_rgb;
 }
 
+unsigned int lcd_display::get_rgb_color_v4(double percent)
+{
+  
+  if(percent > 1.0 || percent < 0.0)
+  {
+    percent = 1;  
+  }
+  unsigned int return_rgb = 0;
+  if(percent < 0.5)
+  {
+    return_rgb = get_rgb_color((double)0);
+  }
+  else if(percent < .7)
+  {
+    return_rgb = get_rgb_color((double).5);
+  }
+  else
+  {
+    return_rgb = get_rgb_color((double)1.0);
+  }
+  
+  return return_rgb;
+}
+
 void lcd_display::update_rectangles()
 {
   unsigned int rgb_col = get_rgb_color(0.0);
@@ -199,7 +223,7 @@ void lcd_display::update_rectangles()
         {
           percent = 0;
         }
-      rgb_col = get_rgb_color_v2(   percent);
+      rgb_col = get_rgb_color_v4(   percent);
       //rgb_col = get_rgb_color_v3(   percent);
 /*      Serial.print(i);
       Serial.print(" , ");
@@ -228,6 +252,9 @@ void lcd_display::update_rectangles()
     }  
   }   
 }
+
+
+
 
 
   
